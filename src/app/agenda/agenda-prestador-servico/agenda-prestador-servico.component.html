@@ -1,0 +1,104 @@
+<div class="container">
+
+   <form autocomplete="off" (ngSubmit)="adicionar()" [formGroup]="formulario">
+      <div class="p-grid">
+         <div class="p-col-12">
+            <h1>Cadastro de Agenda</h1>
+         </div>
+
+         <div class="p-col-3 p-fluid">
+            <label for="time">Data Início: </label>
+            <p-calendar [showTime]="true" [showSeconds]="true" dateFormat="dd/mm/yy" inputId="time" name="dataServico" formControlName="dataServico"
+               [(ngModel)]="agenda.dataServico"></p-calendar>
+
+            <app-message [control]="formulario.get('dataServico')" error="required" text="Informe uma data de início">
+            </app-message>
+         </div>
+
+         <div class="p-col-3 p-fluid">
+
+            <label for="time">Data Fim: </label>
+            <p-calendar [showTime]="true"  dateFormat="dd/mm/yy" [showSeconds]="true" inputId="time" formControlName="dataServicoFim"
+               name="dataServicoFim" [(ngModel)]="agenda.dataServicoFim"></p-calendar>
+
+            <app-message [control]="formulario.get('dataServicoFim')" error="required" text="Informe uma data fim">
+            </app-message>
+         </div>
+
+         <div class="p-col-2 p-fluid">
+            <label>Valor</label>
+            <input pInputText type="text" name="valorServico" formControlName="valorServico"
+               [(ngModel)]="agenda.valorServico" placeholder="0,00" currencyMask [options]="{ prefix: '', thousands: '.', decimal: ',', allowNegative: false }">
+
+            <app-message [control]="formulario.get('valorServico')" error="required" text="Informe o valor do serviço">
+            </app-message>
+         </div>
+
+         <div class="p-col-3 p-fluid">
+            <label>Tipo de Serviço</label>
+            <p-dropdown [options]="tipoServicos" [(ngModel)]="selectedTipoServico"
+               placeholder="Selecione um tipo de serviço" optionLabel="nome" [showClear]="true" formControlName="selectedTipoServico"></p-dropdown>
+
+            <app-message [control]="formulario.get('selectedTipoServico')" error="required"
+               text="Informe um tipo de serviço">
+            </app-message>
+         </div>
+
+         <div class="p-col-1 p-fluid" style="padding-top: 28px;">
+            <button pButton type="submit" icon="pi pi-plus-circle" [disabled]="formulario.invalid"></button>
+         </div>
+
+      </div>
+   </form>
+
+   <div class="p-grid">
+      <div class="p-col-12">
+         <p-table [value]="agendas" [responsive]="true" [paginator]="true" [rows]="filtro.itensPorPagina" [lazy]="true"
+            [totalRecords]="totalRegistros" (onLazyLoad)="aoMudarPagina($event)" #tabela>
+            <ng-template pTemplate="header">
+               <tr>
+                  <th>Dia</th>
+                  <th>Valor</th>
+                  <th>Cliente</th>
+                  <th>Tipo de Serviço</th>
+                  <th class="col-acoes-header"></th>
+               </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-agenda>
+               <tr>
+                  <td>
+                     <span class="p-column-title">Dia</span>
+                     {{ agenda.dataInicioServicoFormatada }} à {{ agenda.dataFimServicoFormatada }}
+                  </td>
+                  <td>
+                     <span class="p-column-title">Valor</span>
+                     R${{ agenda.valorServicoFormatado }}
+                  </td>
+                  <td>
+                     <span class="p-column-title">Cliente</span>
+                     {{ agenda.cliente.nome }}
+                  </td>
+                  <td>
+                     <span class="p-column-title">Tipo de Serviço</span>
+                     {{ agenda.tipoServico.nome }}
+                  </td>
+                  <td class="col-acoes">
+                     <span class="p-column-title"></span>
+                     <button pButton icon="pi pi-trash" pTooltip="Excluir" tooltipPosition="top"
+                        (click)="confirmarExclusao(agenda)"></button>
+                  </td>
+               </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+               <tr>
+                  <td colspan="5">
+                     Nenhum serviço encontrado
+                  </td>
+               </tr>
+            </ng-template>
+         </p-table>
+      </div>
+   </div>
+</div>

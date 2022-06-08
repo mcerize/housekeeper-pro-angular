@@ -1,27 +1,41 @@
-import { AuthHttp } from 'angular2-jwt';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-
-import { environment } from './../../environments/environment';
+import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class LogoutService {
 
-  tokensRenokeUrl: string;
+  tokensRevokeUrl = 'http://localhost:8080/tokens/revoke';
 
   constructor(
-    private http: AuthHttp,
-    private auth: AuthService
-  ) {
-    this.tokensRenokeUrl = `${environment.apiUrl}/tokens/revoke`;
-  }
+    private http: HttpClient,
+    private auth: AuthService,
+    private router: Router,
+  ) { }
 
   logout() {
-    return this.http.delete(this.tokensRenokeUrl, { withCredentials: true })
-      .toPromise()
-      .then(() => {
-        this.auth.limparAccessToken();
-      });
+
+    localStorage.removeItem('usuarioLogado');
+    this.router.navigate(['/login']);
+
+    /* return this.http.delete(this.tokensRevokeUrl, { withCredentials: true })
+       .toPromise()
+       .then(() => {
+         this.auth.limparAccessToken();
+       });*/
   }
+
+
+verificarLogado() {
+   if(!localStorage.getItem('usuarioLogado')) {
+    this.router.navigate(['/login']);
+  }
+  
+}
+
+
 
 }

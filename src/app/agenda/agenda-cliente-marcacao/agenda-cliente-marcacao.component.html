@@ -1,0 +1,28 @@
+<div class="container">
+
+
+    <div class="p-grid" style="text-align: -webkit-center;">
+        <div class="p-col-12 p-md-12 p-fluid" style="text-align: center;">
+            <br />
+            <h1><b>HOUSEKEEPER</b></h1>
+        </div>
+        <div class="p-col-12 p-md-12 p-fluid">
+            <mat-card class="demo-inline-calendar-card">
+                <mat-calendar #calendar (selectedChange)="aoSelecionarData($event)"></mat-calendar>
+            </mat-card>
+        </div>
+        <div class="p-col-12 p-md-12" a>
+            <div class="p-col-2 p-md-2" style="display: inline-block;" *ngFor="let item of agendasSelecionadas">
+                <button pButton (click)="confirmarAgendamento(item)"> {{item.horarioServico}}</button>
+                <div >
+                    <label>Valor: </label><label>R$ {{item.valorServicoFormatado}}</label>
+                    <br /><label>Dia: </label><label>{{item.dataServicoFormatada}}</label>
+                    <br /><label>Período: </label><label>{{item.horarioServico}} às {{item.horarioServicoFim}}</label>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>

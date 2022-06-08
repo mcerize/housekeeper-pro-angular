@@ -1,0 +1,66 @@
+<div class="container">
+
+    <form autocomplete="off" (ngSubmit)="pesquisar()">
+        <div class="p-grid">
+            <div class="p-col-12 p-fluid">
+                <h1>Housekeeper</h1>
+            </div>
+
+            <div class="p-col-6 p-fluid">
+                <select class="form-control" id="pCategory" name="pCategory" style="height: 39px;width: 100%;"
+                    [(ngModel)]="tipoServicoFiltro.id">
+                    <option value="" disabled>Selecione um tipo de serviço</option>
+                    <option *ngFor="let t of tipoServicos" [ngValue]="t.id">{{ t.nome }}</option>
+                </select>
+            </div>
+            <div class=" p-col-1  p-fluid">
+                <button pButton type="submit" icon="pi pi-search"></button>
+            </div>
+
+
+
+        </div>
+    </form>
+
+    <div class="p-grid">
+        <div class="p-col-12">
+            <p-table [value]="usuarios" [responsive]="true" [paginator]="true" [rows]="filtro.itensPorPagina"
+                [lazy]="true" [totalRecords]="totalRegistros" (onLazyLoad)="aoMudarPagina($event)" #tabela>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Tipo de Serviço</th>
+                        <th class="col-acoes-header"></th>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-usuario>
+                    <tr>
+                        <td >
+                            <span class="p-column-title">Nome</span>
+                            {{ usuario.nome }}
+                        </td>
+                        <td >
+                            <span class="p-column-title">Tipo de Serviço</span>
+                            {{ usuario.tipoServicosConcatenados }}
+                        </td>
+                        <td class="col-acoes">
+                            <span class="p-column-title"></span>
+                            <a pButton icon="pi pi-calendar-plus" pTooltip="Visualizar Agenda" tooltipPosition="top"
+                                [routerLink]="['/agendas', usuario.id, tipoServicoFiltro.id]"></a>
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="3">
+                            Nenhum serviço encontrado
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+
+</div>

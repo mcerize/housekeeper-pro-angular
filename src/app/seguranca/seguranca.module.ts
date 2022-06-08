@@ -1,48 +1,48 @@
-import { Http, RequestOptions } from '@angular/http';
-import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { JwtHelperService, JwtModule } from '@auth0/angular-jwt';
 
-import { AuthHttp, AuthConfig } from 'angular2-jwt';
-import { ButtonModule } from 'primeng/components/button/button';
-import { InputTextModule } from 'primeng/components/inputtext/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
 
-import { AuthGuard } from './auth.guard';
-import { LogoutService } from './logout.service';
-import { AuthService } from './auth.service';
-import { MoneyHttp } from './money-http';
 import { SegurancaRoutingModule } from './seguranca-routing.module';
 import { LoginFormComponent } from './login-form/login-form.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { MoneyHttpInterceptor } from './money-http-interceptor';
 
-export function authHttpServiceFactory(auth: AuthService, http: Http, options: RequestOptions) {
-  const config = new AuthConfig({
-    globalHeaders: [
-      { 'Content-Type': 'application/json' }
-    ]
-  });
-
-  return new MoneyHttp(auth, config, http, options);
+export function tokenGetter(): string {
+  return localStorage.getItem('token')!;
 }
 
 @NgModule({
+  declarations: [
+    LoginFormComponent
+  ],
   imports: [
     CommonModule,
     FormsModule,
+
+    JwtModule.forRoot({
+      config: {
+        tokenGetter,
+        allowedDomains: ['localhost:8080'],
+        disallowedRoutes: ['http://localhost:8080/oauth/token']
+      }       
+    }),
 
     InputTextModule,
     ButtonModule,
 
     SegurancaRoutingModule
   ],
-  declarations: [LoginFormComponent],
   providers: [
+    JwtHelperService,
     {
-      provide: AuthHttp,
-      useFactory: authHttpServiceFactory,
-      deps: [AuthService, Http, RequestOptions]
-    },
-    AuthGuard,
-    LogoutService
+      provide: HTTP_INTERCEPTORS,
+      useClass: MoneyHttpInterceptor,
+      multi: true
+    }
   ]
 })
 export class SegurancaModule { }

@@ -1,12 +1,12 @@
-import { Title } from '@angular/platform-browser';
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 
-import { LazyLoadEvent, ConfirmationService } from 'primeng/components/common/api';
-import { ToastyService } from 'ng2-toasty';
+import { ConfirmationService, LazyLoadEvent, MessageService } from 'primeng/api';
+import { Table } from 'primeng/table';
+import { ErrorHandlerService } from '../../core/error-handler.service';
 
-import { AuthService } from './../../seguranca/auth.service';
-import { ErrorHandlerService } from './../../core/error-handler.service';
 import { LancamentoService, LancamentoFiltro } from './../lancamento.service';
+import { AuthService } from './../../seguranca/auth.service';
 
 @Component({
   selector: 'app-lancamentos-pesquisa',
@@ -15,61 +15,67 @@ import { LancamentoService, LancamentoFiltro } from './../lancamento.service';
 })
 export class LancamentosPesquisaComponent implements OnInit {
 
-  totalRegistros = 0;
-  filtro = new LancamentoFiltro();
-  lancamentos = [];
-  @ViewChild('tabela') grid;
 
+  filtro = new LancamentoFiltro();
+
+  totalRegistros: number = 0
+
+  lancamentos: any[] = [] ;
+  @ViewChild('tabela') grid!: Table;
+  
   constructor(
-    private lancamentoService: LancamentoService,
     private auth: AuthService,
+    private lancamentoService: LancamentoService,
+    private messageService: MessageService,
     private errorHandler: ErrorHandlerService,
-    private toasty: ToastyService,
-    private confirmation: ConfirmationService,
+    private confirmationService: ConfirmationService,
     private title: Title
-  ) { }
+  ) {}
 
   ngOnInit() {
-    this.title.setTitle('Pesquisa de lançamentos');
+    this.title.setTitle('Pesquisa de Lançamentos');
   }
-
-  pesquisar(pagina = 0) {
+  
+  pesquisar(pagina: number = 0): void {        
     this.filtro.pagina = pagina;
-
+    
     this.lancamentoService.pesquisar(this.filtro)
-      .then(resultado => {
-        this.totalRegistros = resultado.total;
+      .then((resultado: any) => {
         this.lancamentos = resultado.lancamentos;
+        this.totalRegistros = resultado.total ;
       })
       .catch(erro => this.errorHandler.handle(erro));
   }
 
   aoMudarPagina(event: LazyLoadEvent) {
-    const pagina = event.first / event.rows;
-    this.pesquisar(pagina);
+      const pagina = event!.first! / event!.rows!;
+      this.pesquisar(pagina);
   }
 
-  confirmarExclusao(lancamento: any) {
-    this.confirmation.confirm({
+  confirmarExclusao(lancamento: any): void {
+    this.confirmationService.confirm({
       message: 'Tem certeza que deseja excluir?',
       accept: () => {
-        this.excluir(lancamento);
+          this.excluir(lancamento);
       }
     });
   }
 
   excluir(lancamento: any) {
+
     this.lancamentoService.excluir(lancamento.codigo)
       .then(() => {
         if (this.grid.first === 0) {
           this.pesquisar();
         } else {
-          this.grid.first = 0;
+          this.grid.reset();
         }
 
-        this.toasty.success('Lançamento excluído com sucesso!');
+        this.messageService.add({ severity: 'success', detail: 'Lançamento excluído com sucesso!' })
       })
-      .catch(erro => this.errorHandler.handle(erro));
   }
 
+  naoTemPermissao(permissao: string) {
+    return !this.auth.temPermissao(permissao);
+  }
 }

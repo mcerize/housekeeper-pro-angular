@@ -1,35 +1,46 @@
-import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
-import { InputMaskModule } from 'primeng/components/inputmask/inputmask';
-import { DataTableModule } from 'primeng/components/datatable/datatable';
-import { ButtonModule } from 'primeng/components/button/button';
-import { InputTextModule } from 'primeng/components/inputtext/inputtext';
-import { TooltipModule } from 'primeng/components/tooltip/tooltip';
-
-import { SharedModule } from './../shared/shared.module';
-import { PessoasPesquisaComponent } from './pessoas-pesquisa/pessoas-pesquisa.component';
-import { PessoaCadastroComponent } from './pessoa-cadastro/pessoa-cadastro.component';
+import { ButtonModule } from 'primeng/button';
+import { InputMaskModule } from 'primeng/inputmask';
+import { InputTextModule } from 'primeng/inputtext';
+import { TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
+import { SharedModule } from '../shared/shared.module';
 import { PessoasRoutingModule } from './pessoas-routing.module';
+import { PanelModule } from 'primeng/panel';
+import { DialogModule } from 'primeng/dialog';
+import { DropdownModule } from 'primeng/dropdown';
+
+import { PessoaCadastroComponent } from './pessoa-cadastro/pessoa-cadastro.component';
+import { PessoasPesquisaComponent } from './pessoas-pesquisa/pessoas-pesquisa.component';
+import { PessoaCadastroContatoComponent } from './pessoa-cadastro-contato/pessoa-cadastro-contato.component';
+
 
 @NgModule({
+  declarations: [
+    PessoaCadastroComponent,
+    PessoasPesquisaComponent,
+    PessoaCadastroContatoComponent
+  ],
   imports: [
     CommonModule,
     FormsModule,
+    RouterModule,
 
     InputTextModule,
     ButtonModule,
-    DataTableModule,
+    TableModule,
     TooltipModule,
     InputMaskModule,
-
+    PanelModule,
+    DialogModule,
+    DropdownModule,
+    
     SharedModule,
     PessoasRoutingModule
-  ],
-  declarations: [
-    PessoaCadastroComponent,
-    PessoasPesquisaComponent
   ],
   exports: []
 })

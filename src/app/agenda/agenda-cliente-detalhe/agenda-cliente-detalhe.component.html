@@ -1,0 +1,28 @@
+<div class="container">
+   <div class="p-grid" style="justify-content: center;">
+      <div class="p-col-12 p-md-12 p-fluid" style="text-align: center;">
+         <br />
+         <h1><b>HOUSEKEEPER</b></h1>
+      </div>
+      <div class="p-col-12 p-md-12 p-fluid" style="text-align: center;">
+         <label>Nome: </label><label>{{usuario.nome}}</label>
+      </div>
+      <div class="p-col-12 p-md-12 p-fluid" style="text-align: center;">
+         <label>Contato: </label><label>{{usuario.telefone}}</label>
+      </div>
+      <div class="p-col-12 p-md-12 p-fluid" style="text-align: center;">
+         <label>Serviço: </label><label>{{tipoServico.nome}}</label>
+      </div>
+
+      <div class="p-col-12 p-md-12 p-fluid" style="text-align: center;">
+         <br /><label>Outros serviços prestados: </label><label>{{servicosPrestados}}</label>
+      </div>
+      <div>
+         <div class="p-col-12 p-md-12 p-fluid">
+            <button pButton type="submit" label="Solicitar Serviço" (click)="solicitarServico()"></button>
+         </div>
+      </div>
+
+
+   </div>
+</div>

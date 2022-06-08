@@ -1,53 +1,65 @@
-import { Title } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { CommonModule, DatePipe, registerLocaleData } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { HttpModule } from '@angular/http';
-import { NgModule, LOCALE_ID } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Title } from '@angular/platform-browser';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
+import localePt from '@angular/common/locales/pt';
 
-import { ConfirmationService } from 'primeng/components/common/api';
-import { ConfirmDialogModule } from 'primeng/components/confirmdialog/confirmdialog';
-import { ToastyModule } from 'ng2-toasty';
-import { JwtHelper } from 'angular2-jwt';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageService, ConfirmationService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 import { AuthService } from './../seguranca/auth.service';
 import { ErrorHandlerService } from './error-handler.service';
-import { PessoaService } from './../pessoas/pessoa.service';
-import { LancamentoService } from './../lancamentos/lancamento.service';
-import { CategoriaService } from './../categorias/categoria.service';
 import { NavbarComponent } from './navbar/navbar.component';
-import { NaoAutorizadoComponent } from './nao-autorizado.component';
 import { PaginaNaoEncontradaComponent } from './pagina-nao-encontrada.component';
+import { NaoAutorizadoComponent } from './nao-autorizado.component';
+
+registerLocaleData(localePt, 'pt-BR');
+
+export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
+  return new TranslateHttpLoader(http);
+}
 
 @NgModule({
-  imports: [
-    CommonModule,
-    HttpModule,
-    RouterModule,
-
-    ToastyModule.forRoot(),
-    ConfirmDialogModule,
-  ],
   declarations: [
     NavbarComponent,
     PaginaNaoEncontradaComponent,
     NaoAutorizadoComponent
   ],
+  imports: [
+    CommonModule,
+    RouterModule,
+        
+    ToastModule,
+    ConfirmDialogModule,
+
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    }),
+  ],
   exports: [
     NavbarComponent,
-    ToastyModule,
-    ConfirmDialogModule
+
+    ToastModule,
+    ConfirmDialogModule,
   ],
   providers: [
-    LancamentoService,
-    PessoaService,
-    CategoriaService,
+    DatePipe,
     ErrorHandlerService,
+    
+    MessageService,
+    ConfirmationService,
+    TranslateService,
     AuthService,
 
-    ConfirmationService,
-    JwtHelper,
-    Title,
-    { provide: LOCALE_ID, useValue: 'pt-BR' }
+    Title
   ]
 })
 export class CoreModule { }

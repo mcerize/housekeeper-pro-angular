@@ -1,25 +1,30 @@
 <div class="container" style="max-width: 400px; margin: auto">
 
-  <form autocomplete="off" #f="ngForm">
-    <div class="ui-g ui-fluid">
+  <form autocomplete="off" #loginForm="ngForm">
+    <div class="p-grid">
+      <div class="p-col-12">
+        <h1><b>HOUSEKEEPER</b></h1>
+      </div>
 
-      <div class="ui-g-12">
+      <div class="p-col-12 p-fluid">
         <h1>Login</h1>
       </div>
 
-      <div class="ui-g-12">
-        <input pInputText type="email" name="usuario" placeholder="E-mail"
-          ngModel required #usuario>
+      <div class="p-col-12 p-fluid">
+        <input pInputText type="email" name="usuario" placeholder="E-mail" ngModel required #usuario>
       </div>
 
-      <div class="ui-g-12">
-        <input pInputText type="password" name="senha" placeholder="Senha"
-          ngModel required #senha>
+      <div class="p-col-12 p-fluid">
+        <input pInputText type="password" name="senha" placeholder="Senha" ngModel required #senha>
       </div>
 
-      <div class="ui-g-12">
-        <button pButton type="submit" label="Login" [disabled]="!f.valid"
-          (click)="login(usuario.value, senha.value); senha.value = '';"></button>
+      <div class="p-col-3">
+        <button pButton type="submit" label="Login" [disabled]="loginForm.invalid"
+          (click)="login(usuario.value, senha.value); senha.value=''"></button>
+          
+      </div>
+      <div class="p-col-4">
+        <button pButton label="Nova Conta" (click)="novaConta()"></button>
       </div>
 
     </div>

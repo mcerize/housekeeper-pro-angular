@@ -1,0 +1,201 @@
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Injectable } from "@angular/core";
+import { environment } from '../../environments/environment';
+import { TipoServico, Agenda, Usuario } from '../core/model';
+
+export class AgendaFiltro {
+  nome?: string;
+  pagina: number = 0;
+  itensPorPagina: number = 5;
+}
+
+@Injectable({
+  providedIn: 'root'
+}
+)
+export class AgendaService {
+  agendasUrl: string;
+
+  constructor(private http: HttpClient) {
+    this.agendasUrl = `${environment.apiUrl}/agendas`;
+  }
+
+  pesquisar(filtro: AgendaFiltro): Promise<any> {
+
+    /*const headers = new HttpHeaders()
+      .append('Authorization', 'Basic YWRtaW5AYWxnYW1vbmV5LmNvbTphZG1pbg==');*/
+
+    const headers = new HttpHeaders().
+      append('Content-Type', 'application/json');
+
+    let params = new HttpParams()
+      .set('page', filtro.pagina)
+      .set('size', filtro.itensPorPagina);
+
+    if (filtro.nome) {
+      params = params.set('nome', filtro.nome);
+    }
+
+    return this.http.get(`${this.agendasUrl}`, { headers })
+      .toPromise()
+      .then((response: any) => {
+        const agendas = response;
+
+        const resultado = {
+          agendas,
+          total: response['totalElements']
+        };
+
+        return resultado;
+      });
+  }
+
+  pesquisarPorTipoServico(filtro: TipoServico): Promise<any> {
+
+    /*const headers = new HttpHeaders()
+      .append('Authorization', 'Basic YWRtaW5AYWxnYW1vbmV5LmNvbTphZG1pbg==');*/
+
+    const headers = new HttpHeaders().
+      append('Content-Type', 'application/json');
+
+    let id = filtro.id;
+
+    return this.http.get(`${this.agendasUrl}/tiposServicos/${id}`, { headers })
+      .toPromise()
+      .then((response: any) => {
+        const agendas = response;
+
+        const resultado = {
+          agendas,
+          total: response['totalElements']
+        };
+
+        return resultado;
+      });
+  }
+
+  pesquisarPorPrestadorServico(filtro: Usuario): Promise<any> {
+
+    const headers = new HttpHeaders().
+      append('Content-Type', 'application/json');
+
+    let id = filtro.id;
+
+    return this.http.get(`${this.agendasUrl}/agenda-por-usuario/${id}`, { headers })
+      .toPromise()
+      .then((response: any) => {
+        const agendas = response;
+
+        const resultado = {
+          agendas,
+          total: response['totalElements']
+        };
+
+        return resultado;
+      });
+  }
+
+  
+  pesquisarPorCliente(filtro: Usuario): Promise<any> {
+
+    const headers = new HttpHeaders().
+      append('Content-Type', 'application/json');
+
+    let id = filtro.id;
+
+    return this.http.get(`${this.agendasUrl}/agenda-por-cliente/${id}`, { headers })
+      .toPromise()
+      .then((response: any) => {
+        const agendas = response;
+
+        const resultado = {
+          agendas,
+          total: response['totalElements']
+        };
+
+        return resultado;
+      });
+  }
+
+  listarTodos(): Promise<any> {
+    return this.http.get(this.agendasUrl)
+      .toPromise()
+      .then((response: any) => response.json().content);
+  }
+
+  excluir(id: number): Promise<void> {
+    //const headers = new HttpHeaders()
+    //.append('Authorization', 'Basic YWRtaW5AYWxnYW1vbmV5LmNvbTphZG1pbg==');
+    const headers = new HttpHeaders().
+      append('Content-Type', 'application/json');
+
+    return this.http.delete<void>(`${this.agendasUrl}/${id}`, { headers })
+      .toPromise();
+  }
+
+  //return this.http.post(this.oauthTokenUrl, body,
+  // { headers, withCredentials: true })
+
+  adicionar(agenda: Agenda): Promise<Agenda> {
+    const headers = new HttpHeaders().
+      append('Content-Type', 'application/json');
+
+    return this.http.post<Agenda>(this.agendasUrl, agenda, { headers })
+      .toPromise();
+
+  }
+
+  atualizar(agenda: Agenda): Promise<Agenda> {
+    const headers = new HttpHeaders().
+      append('Content-Type', 'application/json');
+    return this.http.put<Agenda>(`${this.agendasUrl}/${agenda.id}`, agenda, { headers })
+      .toPromise()
+      .then((response: any) => response);
+  }
+
+  buscarPorUsuarioServico(idUsuario: number, idTipoServico: number): Promise<any> {
+    const headers = new HttpHeaders().
+      append('Content-Type', 'application/json');
+
+    return this.http.get(`${this.agendasUrl}/agenda-por-usuario-servico/${idUsuario}/${idTipoServico}`, { headers })
+      .toPromise()
+      .then((response: any) => {
+        const agendas = response;
+
+        const resultado = {
+          agendas,
+          total: response['totalElements']
+        };
+
+        return resultado;
+      });
+  }
+
+  buscarPorCodigo(id: number): Promise<Agenda> {
+    const headers = new HttpHeaders().
+      append('Content-Type', 'application/json');
+
+    return this.http.get(`${this.agendasUrl}/${id}`, { headers })
+      .toPromise()
+      .then((response: any) => {
+        this.converterStringsParaDatas([response]);
+        return response;
+      });
+  }
+
+  private converterStringsParaDatas(agendas: any[]) {
+
+    for (const agenda of agendas) {
+
+      agenda.dataServico = new Date(agenda.dataServico);
+      agenda.dataServicoFim = new Date(agenda.dataServicoFim);
+
+      if (agenda.dataServico) {
+        agenda.dataServico = new Date(agenda.dataServico);
+      }
+      if (agenda.dataServicoFim) {
+        agenda.dataServicoFim = new Date(agenda.dataServicoFim);
+      }
+    }
+  }
+}

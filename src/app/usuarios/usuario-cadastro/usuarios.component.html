@@ -1,0 +1,129 @@
+<div class="container">
+
+  <form #f="ngForm" autocomplete="off" (ngSubmit)="salvar(f)">
+
+    <div class="p-grid">
+      <div class="p-col-12 p-fluid">
+        <h1>Housekeeper</h1>
+    </div>
+      <div class="p-col-12">
+        <h1>{{ title.getTitle()}}</h1>
+      </div>
+
+      <div class="p-col-12 p-fluid">
+        <label>Nome</label>
+        <input pInputText type="text" name="nome" [(ngModel)]="usuario.nome" #nome="ngModel" minlength="5">
+
+        <app-message [control]="nome.control" error="required" text="Informe o nome"></app-message>
+        <app-message [control]="nome.control" error="minlength"
+          text="Mínimo de {{ nome.errors?.minlength?.requiredLength }} caracteres"></app-message>
+      </div>
+
+      <div class="p-col-12 p-md-4 p-fluid">
+        <label>Data de Nascimento</label>
+        <p-calendar name="dataNascimento" dateFormat="dd/mm/yy" [inline]="false" [readonlyInput]="false"
+          [showIcon]="false" [(ngModel)]="usuario.dataNascimento" #dataNascimento="ngModel"></p-calendar>
+
+        <app-message [control]="dataNascimento.control" error="required" text="Informe uma data de nascimento">
+        </app-message>
+      </div>
+
+      <div class="p-col-12 p-md-4 p-fluid">
+        <label>CPF</label>
+        <p-inputMask name="cpf" mask="999.999.999-99" [(ngModel)]="usuario.cpf" #cpf="ngModel"></p-inputMask>
+        <app-message [control]="cpf.control" error="required" text="Informe o cpf"></app-message>
+      </div>
+
+      <div class="p-col-12 p-md-4 p-fluid">
+        <label>Telefone</label>
+        <p-inputMask name="telefone" mask="(99)9?9999-9999" [(ngModel)]="usuario.telefone" #telefone="ngModel">
+        </p-inputMask>
+
+        <app-message [control]="telefone.control" error="required" text="Informe o telefone"></app-message>
+      </div>
+
+      <div class="p-col-12 p-md-9 p-fluid">
+        <label>Logradouro</label>
+        <input pInputText type="text" name="logradouro" [(ngModel)]="usuario.endereco.logradouro" #logradouro="ngModel">
+
+        <app-message [control]="logradouro.control" error="required" text="Informe o logradouro"></app-message>
+      </div>
+
+      <div class="p-col-12 p-md-3 p-fluid">
+        <label>Número</label>
+        <input pInputText type="text" name="numero" [(ngModel)]="usuario.endereco.numero" #numero="ngModel">
+
+        <app-message [control]="numero.control" error="required" text="Informe o número"></app-message>
+      </div>
+
+      <div class="p-col-12 p-md-4 p-fluid">
+        <label>Complemento</label>
+        <input pInputText type="text" name="complemento" [(ngModel)]="usuario.endereco.complemento">
+      </div>
+
+      <div class="p-col-12 p-md-4 p-fluid">
+        <label>Bairro</label>
+        <input pInputText type="text" name="bairro" [(ngModel)]="usuario.endereco.bairro" #bairro="ngModel">
+
+        <app-message [control]="bairro.control" error="required" text="Informe o bairro"></app-message>
+      </div>
+
+      <div class="p-col-12 p-md-4 p-fluid">
+        <label>CEP</label>
+        <p-inputMask name="cep" mask="99.999-999" [(ngModel)]="usuario.endereco.cep" #cep="ngModel">
+        </p-inputMask>
+
+        <app-message [control]="cep.control" error="required" text="Informe o CEP"></app-message>
+      </div>
+
+      <div class="p-col-12 p-md-6 p-fluid">
+        <label>Cidade</label>
+        <input pInputText type="text" name="cidade" [(ngModel)]="usuario.endereco.cidade" #cidade="ngModel">
+
+        <app-message [control]="cidade.control" error="required" text="Informe a cidade"></app-message>
+      </div>
+
+      <div class="p-col-12 p-md-6 p-fluid">
+        <label>Estado</label>
+        <input pInputText type="text" name="estado" [(ngModel)]="usuario.endereco.estado" #estado="ngModel">
+
+        <app-message [control]="estado.control" error="required" text="Informe o estado"></app-message>
+      </div>
+
+      <div class="p-col-12 p-md-6 p-fluid">
+        <label>Email</label>
+        <input pInputText type="email" name="email" [(ngModel)]="usuario.email" #email="ngModel" email>
+
+        <app-message [control]="email.control" error="required" text="Informe o email"></app-message>
+      </div>
+
+      <div class="p-col-12 p-md-6 p-fluid">
+        <label>Senha</label>
+        <input pInputText type="password" name="senha" [(ngModel)]="usuario.senha" #senha="ngModel">
+
+        <app-message [control]="senha.control" error="required" text="Informe a senha"></app-message>
+      </div>
+
+      <div class="p-col-12 p-md-6 p-fluid">
+        <label for="perfis">Perfil<br /></label>
+        <mat-radio-group name="perfisList" [(ngModel)]="usuario.perfil.id" fxLayout="column">
+          <mat-radio-button (change)="aoSelecionarPerfil($event)" *ngFor="let p of perfis" [value]="p.id"
+            name="perfisList">{{p.nome}}&nbsp;&nbsp;&nbsp;&nbsp;</mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+      <div *ngIf="usuario.perfil.id == 3" class="p-col-12 p-md-6 p-fluid">
+        <label for="tipoServicos">Tipos de Serviços<br /></label>
+        <section>
+          <span *ngFor="let t of tipoServicos">
+            <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="t.selecionado">{{t.nome}}&nbsp;&nbsp;&nbsp;&nbsp;</mat-checkbox>
+          </span>
+        </section>
+      </div>
+
+      <div class="p-col-12">
+        <button pButton type="submit" label="Salvar" [disabled]="f.invalid"></button>
+      </div>
+    </div>
+  </form>
+</div>

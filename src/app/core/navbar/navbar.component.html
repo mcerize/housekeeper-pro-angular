@@ -1,20 +1,34 @@
 <nav class="navbar">
 
   <div class="container">
-    <div class="ui-g">
-      <div class="ui-g-12">
-        <a href="javascript:;" class="navbar-toggle" (click)="exibindoMenu = !exibindoMenu"><i class="fa fa-bars"></i></a>
+    <div class="p-grid">
+      <div class="p-col-12">
+        <a href="javascript:;" class="navbar-toggle" (click)="exibindoMenu = !exibindoMenu"><i class="pi pi-bars"></i></a>
       </div>
     </div>
   </div>
 
   <ul class="navbar-menu" [hidden]="!exibindoMenu">
-    <li class="navbar-usuario">{{ auth.jwtPayload?.nome }}</li>
-    <li class="navbar-menuitem" routerLinkActive="ativo"
-      *ngIf="auth.temPermissao('ROLE_PESQUISAR_LANCAMENTO')"><a routerLink="/lancamentos">Lançamentos</a></li>
-    <li class="navbar-menuitem" routerLinkActive="ativo"
-      *ngIf="auth.temPermissao('ROLE_PESQUISAR_PESSOA')"><a routerLink="/pessoas">Pessoas</a></li>
+    <li class="navbar-usuario">{{ usuarioLogado?.nome }}</li>
+    <li class="navbar-menuitem" routerLinkActive="ativo">
+      <a routerLink="/usuarios/{{ usuarioLogado?.id }}">Minha Conta</a>
+    </li>
+   
+    
+    <li class="navbar-menuitem" routerLinkActive="ativo" *ngIf="temPermissao('agendas')">
+      <a routerLink="/agendas">Agendas</a>
+    </li>
+    <li class="navbar-menuitem" routerLinkActive="ativo" *ngIf="temPermissao('agendas/historico')">
+      <a routerLink="/agendas/historico">Minha Agenda</a>
+    </li>
+    <li class="navbar-menuitem" routerLinkActive="ativo" *ngIf="temPermissao('usuarios')">
+      <a routerLink="/usuarios">Pesquisar Serviços</a>
+    </li>
+    <li class="navbar-menuitem" routerLinkActive="ativo" *ngIf="temPermissao('usuarios/adm')">
+      <a routerLink="/usuarios/adm">Pesquisar Usuários</a>
+    </li>
+
     <li class="navbar-menuitem"><a href="javascript:;" (click)="logout()">Logout</a></li>
   </ul>
-
+  
 </nav>

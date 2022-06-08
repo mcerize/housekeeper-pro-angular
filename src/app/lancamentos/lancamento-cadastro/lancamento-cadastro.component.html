@@ -1,80 +1,98 @@
 <div class="container">
-  <form #f="ngForm" autocomplete="off" (ngSubmit)="salvar(f)">
+  <form autocomplete="off" (ngSubmit)="salvar()" [formGroup]="formulario">
 
-    <div class="ui-g">
-      <div class="ui-g-12">
+    <div class="p-grid">
+      <div class="p-col-12">
         <h1>{{ editando ? 'Edição de' : 'Novo' }} Lançamento</h1>
       </div>
 
-      <div class="ui-g-12">
+      <div class="p-col-12">
         <p-selectButton name="tipo" [options]="tipos"
-          [(ngModel)]="lancamento.tipo"
-          #tipo></p-selectButton>
+          formControlName="tipo"></p-selectButton>
       </div>
 
-      <div class="ui-g-6 ui-md-3 ui-fluid">
+      <div class="p-col-6 p-md-3 p-fluid">
         <label>Vencimento</label>
         <p-calendar name="vencimento" dateFormat="dd/mm/yy"
           [inline]="false" [readonlyInput]="false" [showIcon]="false"
-          [(ngModel)]="lancamento.dataVencimento"
-          #vencimento="ngModel" required></p-calendar>
-
-        <app-message [control]="vencimento" error="required"
+          formControlName="dataVencimento"></p-calendar>
+        <app-message [control]="formulario.get('dataVencimento')" error="required"
           text="Informe uma data de vencimento"></app-message>
       </div>
 
-      <div class="ui-g-6 ui-md-3 ui-fluid">
-        <label>{{ tipo.value === 'RECEITA' ? 'Recebimento' : 'Pagamento' }}</label>
+      <div class="p-col-6 p-md-3 p-fluid">
+        <label>{{ formulario.get('tipo')?.value === 'RECEITA' ? 'Recebimento' : 'Pagamento' }}</label>
         <p-calendar dateFormat="dd/mm/yy" name="dataPagamento"
-          [(ngModel)]="lancamento.dataPagamento"></p-calendar>
+          formControlName="dataPagamento"></p-calendar>
       </div>
 
-      <div class="ui-g-12 ui-md-9 ui-fluid">
+      <div class="p-col-12 p-md-9 p-fluid">
         <label>Descrição</label>
         <input pInputText type="text" name="descricao"
-          [(ngModel)]="lancamento.descricao"
-          #descricao="ngModel" required minlength="5">
+          formControlName="descricao">
 
-        <app-message [control]="descricao" error="required"
-          text="Informe a descrição"></app-message>
-        <app-message [control]="descricao" error="minlength"
-          text="Mínimo de {{ descricao.errors?.minlength?.requiredLength }} caracteres"></app-message>
+        <app-message [control]="formulario.get('descricao')" error="required"
+          text="Informe uma descrição"></app-message>
+        <app-message [control]="formulario.get('descricao')" error="minlength"
+          text="Mínimo de {{ formulario.get('descricao')?.errors?.minlength?.requiredLength }} caracteres"></app-message>
       </div>
 
-      <div class="ui-g-12 ui-md-3 ui-fluid">
+      <div class="p-col-12 p-md-3 p-fluid">
         <label>Valor</label>
         <input pInputText type="text" name="valor" placeholder="0,00"
           currencyMask [options]="{ prefix: '', thousands: '.', decimal: ',', allowNegative: false }"
-          [(ngModel)]="lancamento.valor"
-          required>
+          formControlName="valor">
       </div>
 
-      <div class="ui-g-12 ui-md-6 ui-fluid">
+      <div class="p-col-12 p-md-6 p-fluid" formGroupName="categoria">
         <label>Categoria</label>
         <p-dropdown name="categoria" [options]="categorias"
-          placeholder="Selecione" [autoWidth]="false"
-          [(ngModel)]="lancamento.categoria.codigo"
-          required></p-dropdown>
+          placeholder="Selecione"
+          formControlName="codigo"></p-dropdown>
       </div>
 
-      <div class="ui-g-12 ui-md-6 ui-fluid">
+      <div class="p-col-12 p-md-6 p-fluid" formGroupName="pessoa">
         <label>Pessoa</label>
         <p-dropdown name="pessoa" [options]="pessoas" placeholder="Selecione"
-          [autoWidth]="false" [filter]="true"
-          [(ngModel)]="lancamento.pessoa.codigo"
-          required></p-dropdown>
+          [filter]="true"
+          formControlName="codigo"></p-dropdown>
       </div>
 
-      <div class="ui-g-12 ui-fluid">
+      <div class="p-col-12 p-fluid">
         <label>Observação</label>
         <textarea pInputTextarea rows="3" name="observacao"
-          [(ngModel)]="lancamento.observacao"></textarea>
+          formControlName="observacao"></textarea>
       </div>
 
-      <div class="ui-g-12">
-        <button pButton type="submit" label="Salvar" [disabled]="f.invalid"></button>
-        <button pButton type="button" label="Novo" class="ui-button-info"
-          (click)="novo(f)"></button>
+      <div class="p-col-6 p-col-offset-6 p-md-2 p-md-offset-10 p-fluid"
+        *ngIf="!formulario.get('anexo')?.value">
+        <p-fileUpload name="anexo" mode="basic" [auto]="true" [maxFileSize]="100000000"
+          chooseLabel="Anexar" accept="image/*,application/*" [headers]="uploadHeaders"
+          [url]="urlUploadAnexo" 
+          (onBeforeUpload)="antesUploadAnexo()"
+          (onUpload)="aoTerminarUploadAnexo($event)"
+          (onError)="erroUpload($event)"
+          [hidden]="uploadEmAndamento">
+        </p-fileUpload>
+
+        <p-progressSpinner [hidden]="!uploadEmAndamento"
+            [style]="{ width: '25px', height: '25px' }"></p-progressSpinner>
+      </div>
+
+      <div class="p-col-12 p-fluid" dir="rtl"
+        *ngIf="formulario.get('anexo')?.value">
+        <button pButton type="button" class="p-button-danger"
+          icon="pi pi-times" pTooltip="Remover anexo" tooltipPosition="top"
+          (click)="removerAnexo()"></button>
+
+        <a target="_blank" pTooltip="Baixar anexo" tooltipPosition="top"
+          [href]="formulario.get('urlAnexo')?.value">{{ nomeAnexo }}</a>
+      </div>
+
+      <div class="p-col-12">
+        <button pButton type="submit" label="Salvar" [disabled]="formulario.invalid || uploadEmAndamento"></button>
+        <button pButton type="button" label="Novo" class="p-button-info"
+          (click)="novo()"></button>
         <a routerLink="/lancamentos">Voltar para a pesquisa</a>
       </div>
     </div>

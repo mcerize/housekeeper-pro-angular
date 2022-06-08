@@ -1,11 +1,8 @@
-import { Title } from '@angular/platform-browser';
 import { Component, OnInit, ViewChild } from '@angular/core';
-
-import { LazyLoadEvent, ConfirmationService } from 'primeng/components/common/api';
-import { ToastyService } from 'ng2-toasty';
-
-import { ErrorHandlerService } from './../../core/error-handler.service';
-import { PessoaFiltro, PessoaService } from './../pessoa.service';
+import { Title } from '@angular/platform-browser';
+import { LazyLoadEvent, MessageService, ConfirmationService } from 'primeng/api';
+import { ErrorHandlerService } from '../../core/error-handler.service';
+import { PessoaService, PessoaFiltro } from '../pessoa.service'
 
 @Component({
   selector: 'app-pessoas-pesquisa',
@@ -13,17 +10,16 @@ import { PessoaFiltro, PessoaService } from './../pessoa.service';
   styleUrls: ['./pessoas-pesquisa.component.css']
 })
 export class PessoasPesquisaComponent implements OnInit {
-
   totalRegistros = 0;
-  filtro = new PessoaFiltro();
-  pessoas = [];
-  @ViewChild('tabela') grid;
+  filtro = new PessoaFiltro()
+  pessoas: any[] = [];
+  @ViewChild('tabela') grid!: any;
 
   constructor(
     private pessoaService: PessoaService,
+    private messageService: MessageService,
     private errorHandler: ErrorHandlerService,
-    private confirmation: ConfirmationService,
-    private toasty: ToastyService,
+    private confirmationService: ConfirmationService,
     private title: Title
   ) { }
 
@@ -31,43 +27,42 @@ export class PessoasPesquisaComponent implements OnInit {
     this.title.setTitle('Pesquisa de pessoas');
   }
 
-  pesquisar(pagina = 0) {
+  pesquisar(pagina: number = 0): void {        
     this.filtro.pagina = pagina;
-
+    
     this.pessoaService.pesquisar(this.filtro)
-      .then(resultado => {
-        this.totalRegistros = resultado.total;
-        this.pessoas = resultado.pessoas;
-      })
-      .catch(erro => this.errorHandler.handle(erro));
+      .then((dados: any) => {
+        this.pessoas = dados.pessoas;
+        this.totalRegistros = dados.total; 
+      });
   }
 
   aoMudarPagina(event: LazyLoadEvent) {
-    const pagina = event.first / event.rows;
-    this.pesquisar(pagina);
+      const pagina = event!.first! / event!.rows!;
+      this.pesquisar(pagina);
   }
 
-  confirmarExclusao(pessoa: any) {
-    this.confirmation.confirm({
+  confirmarExclusao(pessoa: any): void {
+    this.confirmationService.confirm({
       message: 'Tem certeza que deseja excluir?',
       accept: () => {
-        this.excluir(pessoa);
+          this.excluir(pessoa);
       }
     });
   }
 
   excluir(pessoa: any) {
-    this.pessoaService.excluir(pessoa.codigo)
-      .then(() => {
-        if (this.grid.first === 0) {
-          this.pesquisar();
-        } else {
-          this.grid.first = 0;
-        }
 
-        this.toasty.success('Pesssoa excluída com sucesso!');
-      })
-      .catch(erro => this.errorHandler.handle(erro));
+    this.pessoaService.excluir(pessoa.codigo)
+      .then(
+        () => {
+          this.grid.reset();
+
+          this.messageService.add({ severity: 'success', detail: 'Pessoa excluída com sucesso!' })
+        }
+      )
+      .catch((error) => this.errorHandler.handle(error))
+      
   }
 
   alternarStatus(pessoa: any): void {
@@ -78,9 +73,8 @@ export class PessoasPesquisaComponent implements OnInit {
         const acao = novoStatus ? 'ativada' : 'desativada';
 
         pessoa.ativo = novoStatus;
-        this.toasty.success(`Pessoa ${acao} com sucesso!`);
+        this.messageService.add({ severity: 'success', detail: `Pessoa ${acao} com sucesso!` });
       })
       .catch(erro => this.errorHandler.handle(erro));
   }
-
 }
