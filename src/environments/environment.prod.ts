@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://housekeeper-pro-api.herokuapp.com'
+  apiUrl: 'https://housekeeper-api.herokuapp.com'
 };
